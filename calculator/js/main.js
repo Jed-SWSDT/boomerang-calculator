@@ -1,5 +1,6 @@
 // Balloon calculator
 var SAW = function () {
+    var debug = true;
 
     var constants = {
         HeliumDensity: 0.1786, // ... at 20C, 101 kPa (kg/m^3)
@@ -10,12 +11,11 @@ var SAW = function () {
         BalloonDrag: 0.25      // ??
     };
 
-    // TODO: Rename 'state' to be something more representative
-    var getState = function (state) {
-        var pressure = state.pressure || 101000; // Pa 
-        var temperature = state.temperature || 283; // K
+    var getBalloonCondition = function (initialState) {
+        var pressure = initialState.pressure || 101000; // Pa 
+        var temperature = initialState.temperature || 283; // K
         
-        var balloon = state.balloon || {
+        var balloon = initialState.balloon || {
             diffPressure: 133, // Pa 
             gasTemperature: 283 // K    
         };
@@ -26,7 +26,6 @@ var SAW = function () {
             balloon.gaugePressure / (balloon.gasTemperature * constants.RSpecificHe);
 
         var calcHeliumMass = function (vehicle, ascentRateTarget, accuracy) {
-
             var airDensity = pressure / (constants.RSpecificAir * temperature);
 
             var calculateAscentRate = function (heliumMass) {
@@ -50,17 +49,18 @@ var SAW = function () {
                      Math.sqrt(freeLiftNewtons / 
                      (0.5 * constants.BalloonDrag * airDensity * (Math.PI * Math.pow(launchRadius,2))));
 
-                // For debugging ...
-                console.log("\n");
-                console.log("Helium mass:        " + heliumMass);
-                console.log("Gauge pressure:     " + balloon.gaugePressure);
-                console.log("Air density:        " + airDensity);
-                console.log("Balloon gas dens:   " + balloon.gasDensity); 
-                console.log("Launch volume:      " + launchVolume); 
-                console.log("Gross lift (kg):    " + grossLiftKg);
-                console.log("Free lift (kg):   "   + freeLiftKg);
-                console.log("Free lift (N):    "   + freeLiftNewtons);
-                console.log("Ascent rate:      "   + ascentRate);
+                if (debug) {
+                    console.log("\n");
+                    console.log("Helium mass:        " + heliumMass);
+                    console.log("Gauge pressure:     " + balloon.gaugePressure);
+                    console.log("Air density:        " + airDensity);
+                    console.log("Balloon gas dens:   " + balloon.gasDensity); 
+                    console.log("Launch volume:      " + launchVolume); 
+                    console.log("Gross lift (kg):    " + grossLiftKg);
+                    console.log("Free lift (kg):   "   + freeLiftKg);
+                    console.log("Free lift (N):    "   + freeLiftNewtons);
+                    console.log("Ascent rate:      "   + ascentRate);    
+                }
 
                 return ascentRate;
             };
@@ -89,31 +89,56 @@ var SAW = function () {
             return heliumMass;
         };
 
+        var calcVentTime = function (beforeMass, afterMass, valve) {
+            var idealOutletVelocity = Math.sqrt((2 * balloon.diffPressure) / balloon.gasDensity); 
+            var volumetricFlowRate = idealOutletVelocity * valve.neckTubeInletArea;
+            var massFlowRate = volumetricFlowRate * balloon.gasDensity;
+            var ventTime = (beforeMass - afterMass) / massFlowRate;
+
+            return ventTime;
+        };
+
         return {
             pressure: pressure,
             temperature: temperature,
             balloon: balloon,
-            calcHeliumMass: calcHeliumMass
+            calcHeliumMass: calcHeliumMass,
+            calcVentTime: calcVentTime
         };
     };
 
+    // Params:
+    // systemMass: (number),
+    // launch: {
+    //     pressure: (number),
+    //     temperature: (number),
+    //     balloon: {
+    //         diffPressure: (number),
+    //         gasTemperature: (number)
+    //     }
+    // },
+    // ascentRateTarget: (number),
+    // target: {
+    //     pressure: (number),
+    //     temperature: (number),
+    //     balloon: {
+    //         diffPressure: (number),
+    //         gasTemperature: (number)
+    //     }
+    // }
     var Balloon = function (params) {
         params = params || {};
-
-        var launch = getState(params.launch);
-        var target = getState(params.target);
 
         // Launch site loading
         var vehicle = {};
         vehicle.mass = params.systemMass || 2.0200; // kg
 
-        //
+        // Targets
         var ascentRateTarget = params.ascentRateTarget || 4.5; // m/s;
 
-        var valve = {};
-        valve.neckTubeInletDiameter = 0.03; // m
-        valve.neckTubeInletRadius = valve.neckTubeInletDiameter / 2;
-        valve.neckTubeInletArea = Math.PI * Math.pow(valve.neckTubeInletRadius, 2);
+        // Conditions
+        var launch = getBalloonCondition(params.launch);
+        var target = getBalloonCondition(params.target);
 
         //----------------------------------------------
         // Calculations
@@ -127,15 +152,23 @@ var SAW = function () {
         // TODO: Fix the ascent rate calculator and change this to 0.
         var neutralLiftHeliumMass = launch.calcHeliumMass(vehicle, 0.1, 0.15);
 
-        console.log("\nLaunch helium mass: " + launchHeliumMass + " kg");
-        console.log("Neutral lift helium mass: " + neutralLiftHeliumMass + " kg");
+        if (debug) {
+            console.log("\nLaunch helium mass: " + launchHeliumMass + " kg");
+            console.log("Neutral lift helium mass: " + neutralLiftHeliumMass + " kg");    
+        }
 
-        var idealOutletVelocity = Math.sqrt((2 * target.balloon.diffPressure) / target.balloon.gasDensity); 
-        var volumetricFlowRate = idealOutletVelocity * valve.neckTubeInletArea;
-        var massFlowRate = volumetricFlowRate * target.balloon.gasDensity;
-        var ventTimeForStableFloat = (launchHeliumMass - neutralLiftHeliumMass) / massFlowRate;
+        // TODO: Where does the valve want to be?
+        var valve = {};
+        valve.neckTubeInletDiameter = 0.03; // m
+        valve.neckTubeInletRadius = valve.neckTubeInletDiameter / 2;
+        valve.neckTubeInletArea = Math.PI * Math.pow(valve.neckTubeInletRadius, 2);
+        
+        var ventTimeForStableFloat = 
+            target.calcVentTime(launchHeliumMass, neutralLiftHeliumMass, valve);
 
-        console.log("Vent time for stable float: " + ventTimeForStableFloat + " seconds");
+        if (debug) {
+            console.log("Vent time for stable float: " + ventTimeForStableFloat + " seconds");
+        }
 
         return {
             launch: launchHeliumMass,
@@ -148,4 +181,3 @@ var SAW = function () {
         Balloon: Balloon
     }
 }();
-
