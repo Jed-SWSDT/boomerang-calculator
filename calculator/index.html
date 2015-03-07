@@ -7,7 +7,130 @@
 
         <script src="js/lib/jquery-2.1.3.js"></script>        
         <script src="js/lib/bootstrap-3.3.2-custom.js"></script>
+
+        <script src="js/main.js"></script>
+        <script>
+$(function () {
+
+    $("#calcButton").click(function () {
+        var params = {
+            systemMass: parseFloat($("#launchMass").val()),
+            launchSite: {
+                pressure: parseFloat($("#lsPressure").val()),
+                temperature: parseFloat($("#lsTemperature").val()),
+                balloon: {
+                    diffPressure: parseFloat($("#lsBalloonDiffPressure").val()),
+                    gasTemperature: parseFloat($("#lsBalloonGasTemperature").val())
+                }
+            },
+            ascentRateTarget: parseFloat($("#ascentRateTarget").val()),
+            target: {
+                pressure: parseFloat($("#ambientPressure").val()),
+                temperature: parseFloat($("#ambientTemperature").val()),
+                balloon: {
+                    diffPressure: parseFloat($("#ambientBalloonDiffPressure").val()),
+                    gasTemperature: parseFloat($("#ambientBalloonGasTemperature").val())
+                }
+            }
+        };
+
+        console.log(params);
+
+        var calc = Balloon(params);
+
+        $("#ascent").text(calc.launch + " kg");
+        $("#neutral").text(calc.neutral + " kg");
+        $("#time").text(calc.time + " s");
+    });
+
+})
+        </script>
     </head>
     
-    <h1>Hello, balloon!</h1>
+    <div class="container">
+        <h1>Hello, balloon!</h1>
+
+        <label for="launchMass">System launch mass 
+            <input id="launchMass" name="launchMass" type="number" value="2.02"/> (kg)
+            <span>(Todo: Get this from another form)</span>
+        </label>
+
+        <h2>Launch site values</h2>
+        <div>
+            <label for="lsPressure">Launch site pressure 
+                <input id="lsPressure" type="number" value="101000"/> (Pa)
+            </label>
+        </div>
+
+        <div>
+            <label for="lsTemperature">Launch site temperature
+                <input id="lsTemperature" type="number" value="283"/> (K)
+            </label>
+        </div>
+
+        <div>
+            <label for="lsBalloonDiffPressure">Balloon diff pressure 
+                <input id="lsBalloonDiffPressure" type="number" value="133"/> (Pa)
+            </label>
+        </div>
+
+        <div>
+            <label for="lsBalloonGasTemperature">Balloon gas temperature 
+                <input id="lsBalloonGasTemperature" type="number" value="283"/> (K)
+            </label>
+        </div>
+
+        <h2>Targets</h2>
+        <div>
+            <label for="ascentRateTarget">Ascent rate
+                <input id="ascentRateTarget" type="number" value="4.5"/> (m/s)
+            </label>
+        </div>
+
+        <h2>Ambient conditions</h2>
+        <div>
+            <label for="ambientPressure">Ambient pressure 
+                <input id="ambientPressure" type="number" value="10343"/> (Pa)
+            </label>
+        </div>
+
+        <div>
+            <label for="ambientTemperature">Ambient temperature
+                <input id="ambientTemperature" type="number" value="221"/> (K)
+            </label>
+        </div>
+
+        <div>
+            <label for="ambientBalloonDiffPressure">Ambient balloon diff pressure 
+                <input id="ambientBalloonDiffPressure" type="number" value="150"/> (Pa)
+            </label>
+        </div>
+
+        <div>
+            <label for="ambientBalloonGasTemperature">Ambient balloon gas temperature 
+                <input id="ambientBalloonGasTemperature" type="number" value="223"/> (K)
+            </label>
+        </div>
+
+        <button id="calcButton">Calculate</button>
+
+        <div id="output">
+            <div>
+                <label>Ascent rate helium mass
+                    <span id="ascent"></span>
+                </label>
+            </div>
+            <div>
+                <label>Neutral lift helium mass
+                    <span id="neutral"></span>
+                </label>
+            </div>
+            <div>
+                <label>Vent time for stable float
+                    <span id="time"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
 </html>
