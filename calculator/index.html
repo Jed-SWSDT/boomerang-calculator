@@ -15,7 +15,7 @@ $(function () {
     $("#calcButton").click(function () {
         var params = {
             systemMass: parseFloat($("#launchMass").val()),
-            launchSite: {
+            launch: {
                 pressure: parseFloat($("#lsPressure").val()),
                 temperature: parseFloat($("#lsTemperature").val()),
                 balloon: {
@@ -36,7 +36,7 @@ $(function () {
 
         console.log(params);
 
-        var calc = Balloon(params);
+        var calc = SAW.Balloon(params);
 
         $("#ascent").text(calc.launch + " kg");
         $("#neutral").text(calc.neutral + " kg");
