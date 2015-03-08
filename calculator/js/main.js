@@ -43,7 +43,8 @@ var SAW = function () {
 
                 if (freeLiftNewtons <= 0) {
                     // Descending ...
-                    // TODO: Actually do the math.
+                    // TODO: Actually do the math? This isn't as important
+                    // now that we use a narrowing-in algorithm.
                     return -10;
                 }
 
@@ -67,22 +68,32 @@ var SAW = function () {
                 return ascentRate;
             };
 
-            var heliumMass = 0.0;
+            var heliumMass = 0.0010;
+            var massIsGreaterThan = 0.0;
+            var massIsLessThan = undefined;
+
             var ascentRate = calculateAscentRate(heliumMass);
 
-            while (Math.abs(ascentRate - ascentRateTarget) > (accuracy || 0.001)) {
+            while (Math.abs(ascentRate - ascentRateTarget) > (accuracy || 0.0001)) {
+                
                 if (ascentRate < ascentRateTarget) {
-                    // Increase mass by hundredths, to arrive
-                    // in the ballpack relatively quickly, and
-                    // minimize floating-point arithmetic.
-                    heliumMass += 0.0010;
+                    // The target mass is greater than where we are at
+                    massIsGreaterThan = heliumMass;
                 }
                 else {
-                    // When we get here, we've overshot our 
-                    // ascent target, so we decrease by
-                    // thousandths, to get a more
-                    // accurate result.
-                    heliumMass -= 0.0001;
+                    // We've overshot our ascent target
+                    massIsLessThan = heliumMass;
+                }
+
+                if (!massIsLessThan) {
+                    // If we don't know our max yet,
+                    // double the guess
+                    heliumMass = heliumMass * 2;
+                    // TODO: Do we need to worry about number overflow?
+                }
+                else {
+                    // Otherwise guess halfway between things
+                    heliumMass = (massIsGreaterThan + massIsLessThan) / 2;
                 }
 
                 ascentRate = calculateAscentRate(heliumMass);
@@ -148,11 +159,7 @@ var SAW = function () {
         var launchHeliumMass = launch.calcHeliumMass(vehicle, ascentRateTarget);        
         // Calculate the neutral lift using the launch-site conditions, 
         // because they're easier to verify(?)
-        //
-        // The lowest ascent rate we can calculate right now is 0.15 m/s
-        // Also we use a target of 0.1 here because it breaks if we go lower.
-        // TODO: Fix the ascent rate calculator and change this to 0.
-        var neutralLiftHeliumMass = launch.calcHeliumMass(vehicle, 0.1, 0.15);
+        var neutralLiftHeliumMass = launch.calcHeliumMass(vehicle, 0.0);
 
         if (debug) {
             console.log("\nLaunch helium mass: " + launchHeliumMass + " kg");
@@ -180,10 +187,14 @@ var SAW = function () {
     };
 
     return {
-        Balloon: Balloon
+        Balloon: Balloon,
+        test: {
+            system: Balloon,
+            condition: getBalloonCondition
+        }
     }
 }();
 
 if (module) {
-    module.exports = SAW.Balloon;
+    module.exports = SAW.test;
 }
