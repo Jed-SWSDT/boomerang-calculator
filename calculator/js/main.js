@@ -183,3 +183,7 @@ var SAW = function () {
         Balloon: Balloon
     }
 }();
+
+if (module) {
+    module.exports = SAW.Balloon;
+}
