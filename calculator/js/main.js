@@ -21,6 +21,8 @@ var SAW = function () {
         };
 
         // TODO: This is a system, so should we code it as such?
+        // (In other words, do we need setters and to update the
+        // model when any paramter changes?)
         balloon.gaugePressure = pressure + balloon.diffPressure;
         balloon.gasDensity = 
             balloon.gaugePressure / (balloon.gasTemperature * constants.RSpecificHe);
