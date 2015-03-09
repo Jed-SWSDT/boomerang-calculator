@@ -3,6 +3,19 @@
         <link rel="stylesheet" href="css/bootstrap-3.3.2-custom.css"/>
         <link rel="stylesheet" href="css/bootstrap-theme-3.3.2-custom.css"/>
         <style>
+            body {
+                background-color: #04394d;
+            }
+            .container {
+                background-color: white;
+            }
+            h1 {
+                text-align: right;
+                color: #04394d;
+            }
+            h2 {
+                padding-bottom: 0.2ex;
+            }
             th {
                 padding-right: 2ex;
                 padding-top: 0.75ex;
@@ -11,7 +24,28 @@
                 padding-bottom: 0.75ex;
             }
             .calc {
-                background-color: #f3f3ff;
+                background-color: #d2f3fe;
+            }
+            .buttonRow {
+                text-align: right;
+            }
+
+            .calcPanel {
+                background-color: #fafafa;
+                padding-top: 1.1em;
+                padding-bottom: 3em;
+            }
+
+            .balloonPanel {
+                background-color: #eee;
+                padding-top: 1.1em;
+                padding-bottom: 3em;
+            }
+
+            .conditionsPanel {
+                background-color: #ddd;
+                padding-top: 1.1em;
+                padding-bottom: 3em;
             }
         </style>
 
@@ -66,7 +100,9 @@
 
         $(function () {
             var fieldsToUpdateOnChange = [ 
-                'launchMass', 
+                'mass1',
+                'mass2',
+                'mass3', 
                 'lsPressure',
                 'lsTemperature',
                 'lsBalloonDiffPressure',
@@ -82,15 +118,75 @@
             }
 
             $("#calcButton").click(updateView);
+
+            updateView();
         });
         </script>
     </head>
     
     <div id="calculator" class="container">
-        <h1>Hello, balloon!</h1>
+        <h1>Smith &amp; Williamson</h1>
 
-        <div class="row">
+        <div class="row calcPanel">
+            <div class="col-md-6 col-xs-12">
+                <h2>Calculations</h2>
+                <table>
+                    <tr>
+                        <th><label>Ascent rate helium mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="ascent"></span>
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Neutral lift helium mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="neutral"></span>
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Vent time for stable float</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="time"></span>
+                                <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <h2>Targets</h2>
+                <table>
+                    <tr>
+                        <th><label for="ascentRateTarget">Initial ascent rate</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="ascentRateTarget" class="form-control"  
+                                    type="number" value="4.5"/>
+                                <div class="input-group-addon">m/s</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <td class="buttonRow"><button id="calcButton" class="btn btn-default">Calculate</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+
+        <div class="row balloonPanel">
             <div class="col-xs-12">
+                <h2>Balloon properties</h2>
                 <table>
                     <tr>
                         <th><label for="mass1">Balloon envelope mass</label></th>
@@ -125,60 +221,11 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-8 col-xs-12">
-                <h2>Targets</h2>
-                <table>
-                    <tr>
-                        <th><label for="ascentRateTarget">Ascent rate</label></th>
-                        <td>
-                            <div class="input-group">
-                                <input id="ascentRateTarget" class="form-control"  
-                                    type="number" value="4.5"/>
-                                <div class="input-group-addon">m/s</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-8 col-xs-12">
-                <h2>Calculations</h2>
-                <table>
-                    <tr>
-                        <th><label>Ascent rate helium mass</label></th>
-                        <td>
-                            <div class="input-group">
-                                <span class="form-control calc" id="ascent"></span>
-                                <div class="input-group-addon">kg</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label>Neutral lift helium mass</label></th>
-                        <td>
-                            <div class="input-group">
-                                <span class="form-control calc" id="neutral"></span>
-                                <div class="input-group-addon">kg</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label>Vent time for stable float</label></th>
-                        <td>
-                            <div class="input-group">
-                                <span class="form-control calc" id="time"></span>
-                                <div class="input-group-addon">s</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-sm-8 col-xs-12">
+        <div class="row conditionsPanel">
+            <div class="col-md-6 col-xs-12">
                 <h2>Launch site conditions</h2>
                 <table>
                     <tr>
@@ -226,10 +273,8 @@
                     </tr>
                 </table>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-8">
+            <div class="col-xs-12 col-md-6">
                 <h2>Ambient conditions at altitude</h2>
                 <table>
                     <tr>
@@ -274,10 +319,6 @@
                     </tr>
                 </table>
             </div>
-        </div>
-
-        <div class="row buttonRow">
-            <button id="calcButton" class="btn btn-default">Calculate</button>
         </div>
 
         <div id="example"></div>
