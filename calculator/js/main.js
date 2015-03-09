@@ -3,12 +3,14 @@ var SAW = function () {
     var debug = false;
 
     var constants = {
+        BalloonDrag: 0.25,            // coefficient
+        ValveTubeInletDiameter: 0.03, // m
+
         HeliumDensity: 0.1786, // ... at 20C, 101 kPa (kg/m^3)
         AirDensity: 1.2930,    // ... at 20C, 101 kPa (kg/m^3)
         RSpecificHe: 2077,     // J/Kg K
         RSpecificAir: 286.9,   // J/Kg K
-        Gravity: 9.810,        // m/s^2
-        BalloonDrag: 0.25      // ??
+        Gravity: 9.810        // m/s^2
     };
 
     var error = function (message) {
@@ -199,7 +201,7 @@ var SAW = function () {
     var BalloonViewModel = function (params) {
         params = params || {};
 
-        var tubeDiameter = params.vehicle.valve.neckTubeInletDiameter || 0.03;
+        var tubeDiameter = params.vehicle.valve.neckTubeInletDiameter || constants.ValveTubeInletDiameter;
         var tubeRadius = tubeDiameter / 2;
 
         // Launch site loading
