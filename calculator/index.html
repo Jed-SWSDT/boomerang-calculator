@@ -24,8 +24,13 @@
         <script src="js/main.js"></script>
         <script>
         var updateView = function () {
+
+            var totalMass = (parseFloat($("#mass1").val()) +
+                parseFloat($("#mass2").val()) +
+                parseFloat($("#mass3").val())) / 1000; // kg
+
             var params = {
-                systemMass: parseFloat($("#launchMass").val()),
+                systemMass: totalMass,
                 launch: {
                     pressure: parseFloat($("#lsPressure").val()),
                     temperature: parseFloat($("#lsTemperature").val()),
@@ -81,10 +86,36 @@
 
         <div class="row">
             <div class="col-xs-12">
-                <label for="launchMass">System launch mass 
-                    <input id="launchMass" name="launchMass" type="number" value="2.02"/> (kg)
-                    <span>(Todo: Get this from another form)</span>
-                </label>
+                <table>
+                    <tr>
+                        <th><label for="mass1">Balloon envelope mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="mass1" type="number" value="300" class="form-control"/>
+                                <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="mass2">Flight system (including payload) mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="mass2" type="number" value="1090" class="form-control"/>
+                                <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="mass3">Ballast mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="mass3" type="number" value="630" class="form-control"
+                                />
+                                <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
 
