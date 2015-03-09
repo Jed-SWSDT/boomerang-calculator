@@ -2,6 +2,18 @@
     <head>
         <link rel="stylesheet" href="css/bootstrap-3.3.2-custom.css"/>
         <link rel="stylesheet" href="css/bootstrap-theme-3.3.2-custom.css"/>
+        <style>
+            th {
+                padding-right: 2ex;
+                padding-top: 0.75ex;
+            }
+            td {
+                padding-bottom: 0.75ex;
+            }
+            .calc {
+                background-color: #f3f3ff;
+            }
+        </style>
 
         <script src="js/lib/react-0.12.2.js"></script>
         <script src="js/lib/JsxTransformer-0.12.2.js"></script>
@@ -37,12 +49,28 @@
 
             var calc = SAW.Balloon(params);
 
-            $("#ascent").text(calc.launch + " kg");
-            $("#neutral").text(calc.neutral + " kg");
-            $("#time").text(calc.time + " s");
+            $("#ascent").text(calc.launch);
+            $("#neutral").text(calc.neutral);
+            $("#time").text(calc.time);
         };
 
         $(function () {
+            var fieldsToUpdateOnChange = [ 
+                'launchMass', 
+                'lsPressure',
+                'lsTemperature',
+                'lsBalloonDiffPressure',
+                'lsBalloonGasTemperature',
+                'ascentRateTarget',
+                'ambientPressure',
+                'ambientTemperature',
+                'ambientBalloonDiffPressure',
+                'ambientBalloonGasTemperature'];
+
+            for (var index in fieldsToUpdateOnChange) {
+                $("#" + fieldsToUpdateOnChange[index]).change(updateView);
+            }
+
             $("#calcButton").click(updateView);
         });
         </script>
@@ -51,86 +79,169 @@
     <div id="calculator" class="container">
         <h1>Hello, balloon!</h1>
 
-        <label for="launchMass">System launch mass 
-            <input id="launchMass" name="launchMass" type="number" value="2.02"/> (kg)
-            <span>(Todo: Get this from another form)</span>
-        </label>
-
-        <h2>Launch site values</h2>
-        <div>
-            <label for="lsPressure">Launch site pressure 
-                <span id="lsPressureReact"/> (Pa)
-            </label>
-        </div>
-
-        <div>
-            <label for="lsTemperature">Launch site temperature
-                <input id="lsTemperature" type="number" value="283"/> (K)
-            </label>
-        </div>
-
-        <div>
-            <label for="lsBalloonDiffPressure">Balloon diff pressure 
-                <input id="lsBalloonDiffPressure" type="number" value="133"/> (Pa)
-            </label>
-        </div>
-
-        <div>
-            <label for="lsBalloonGasTemperature">Balloon gas temperature 
-                <input id="lsBalloonGasTemperature" type="number" value="283"/> (K)
-            </label>
-        </div>
-
-        <h2>Targets</h2>
-        <div>
-            <label for="ascentRateTarget">Ascent rate
-                <input id="ascentRateTarget" type="number" value="4.5"/> (m/s)
-            </label>
-        </div>
-
-        <h2>Ambient conditions</h2>
-        <div>
-            <label for="ambientPressure">Ambient pressure 
-                <input id="ambientPressure" type="number" value="10343"/> (Pa)
-            </label>
-        </div>
-
-        <div>
-            <label for="ambientTemperature">Ambient temperature
-                <input id="ambientTemperature" type="number" value="221"/> (K)
-            </label>
-        </div>
-
-        <div>
-            <label for="ambientBalloonDiffPressure">Ambient balloon diff pressure 
-                <input id="ambientBalloonDiffPressure" type="number" value="150"/> (Pa)
-            </label>
-        </div>
-
-        <div>
-            <label for="ambientBalloonGasTemperature">Ambient balloon gas temperature 
-                <input id="ambientBalloonGasTemperature" type="number" value="223"/> (K)
-            </label>
-        </div>
-
-        <button id="calcButton">Calculate</button>
-
-        <div id="output">
-            <div>
-                <label>Ascent rate helium mass
-                    <span id="ascent"></span>
+        <div class="row">
+            <div class="col-xs-12">
+                <label for="launchMass">System launch mass 
+                    <input id="launchMass" name="launchMass" type="number" value="2.02"/> (kg)
+                    <span>(Todo: Get this from another form)</span>
                 </label>
             </div>
-            <div>
-                <label>Neutral lift helium mass
-                    <span id="neutral"></span>
-                </label>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-8 col-xs-12">
+                <h2>Targets</h2>
+                <table>
+                    <tr>
+                        <th><label for="ascentRateTarget">Ascent rate</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="ascentRateTarget" class="form-control"  
+                                    type="number" value="4.5"/>
+                                <div class="input-group-addon">m/s</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <div>
-                <label>Vent time for stable float
-                    <span id="time"></span>
-                </label>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-8 col-xs-12">
+                <h2>Calculations</h2>
+                <table>
+                    <tr>
+                        <th><label>Ascent rate helium mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="ascent"></span>
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Neutral lift helium mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="neutral"></span>
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Vent time for stable float</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="time"></span>
+                                <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-8 col-xs-12">
+                <h2>Launch site conditions</h2>
+                <table>
+                    <tr>
+                        <th><label for="lsPressure">Pressure</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="lsPressure" class="form-control"  
+                                    type="number" value="101000"/>
+                                <div class="input-group-addon">Pa</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th><label for="lsTemperature">Temperature</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="lsTemperature" 
+                                    type="number" value="283"/>
+                                <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th><label for="lsBalloonDiffPressure">Balloon diff pressure</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="lsBalloonDiffPressure" class="form-control"  
+                                    type="number" value="133"/>
+                                <div class="input-group-addon">Pa</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th><label for="lsBalloonGasTemperature">Balloon gas temperature</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="lsBalloonGasTemperature" 
+                                    type="number" value="283"/>
+                                <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                <h2>Ambient conditions at altitude</h2>
+                <table>
+                    <tr>
+                        <th><label for="ambientPressure">Pressure</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="ambientPressure" 
+                                    type="number" value="10343"/>
+                                <div class="input-group-addon">Pa</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="ambientTemperature">Temperature</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="ambientTemperature" 
+                                    type="number" value="221"/>
+                                <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="ambientBalloonDiffPressure">Balloon diff pressure</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="ambientBalloonDiffPressure" 
+                                    type="number" value="150"/>
+                                <div class="input-group-addon">Pa</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="ambientBalloonGasTemperature">Balloon gas temperature </label></th>
+                        <td>
+                            <div class="input-group">
+                                <input class="form-control" id="ambientBalloonGasTemperature" 
+                                    type="number" value="223"/>
+                                <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row buttonRow">
+            <button id="calcButton" class="btn btn-default">Calculate</button>
         </div>
 
         <div id="example"></div>
@@ -138,26 +249,30 @@
     
     
     <script type="text/jsx">
-        var SystemInput = React.createClass({
-            getInitialState: function() {
-                return {value: 101000};
-            },
-            handleChange: function(event) {
-                this.setState({value: event.target.value});
-                // updateView();
-            },
-            render: function() {
-                var value = this.state.value;
-                return <input id="lsPressure" 
-                    type="number" value={value} 
-                    onChange={this.handleChange} />;
-            }
-        });
+        // var SystemInput = React.createClass({
+        //     getInitialState: function() {
+        //         return {value: 101000};
+        //     },
+        //     checkValid: function (event) {
+        //         console.log(event.target.value);
+        //         return false;
+        //     },
+        //     handleChange: function(event) {
+        //         this.setState({value: event.target.value});
+        //     },
+        //     render: function() {
+        //         var value = this.state.value;
+        //         return <input id="lsPressure" 
+        //             type="number" value={value} 
+        //             onChange={this.handleChange} 
+        //             isValid={this.checkValid}/>;
+        //     }
+        // });
          
 
-        React.render(
-          <SystemInput />,
-          document.getElementById('lsPressureReact')
-        );
+        // React.render(
+        //   <SystemInput />,
+        //   document.getElementById('lsPressureReact')
+        // );
     </script>
 </html>
