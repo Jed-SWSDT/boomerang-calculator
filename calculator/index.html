@@ -47,6 +47,10 @@
                 padding-top: 1.1em;
                 padding-bottom: 3em;
             }
+
+            #totalMass {
+                background-color: #ddd;
+            }
         </style>
 
         <script src="js/lib/react-0.12.2.js"></script>
@@ -96,6 +100,8 @@
             $("#ascent").text(calc.launch);
             $("#neutral").text(calc.neutral);
             $("#time").text(calc.time);
+
+            $("#totalMass").text(totalMass);
         };
 
         $(function () {
@@ -214,6 +220,15 @@
                                 <input id="mass3" type="number" value="630" class="form-control"
                                 />
                                 <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="totalMass">Total mass</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span id="totalMass" class="form-control"></span>
+                                <div class="input-group-addon">kg</div>
                             </div>
                         </td>
                     </tr>
