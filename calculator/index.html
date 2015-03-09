@@ -97,9 +97,9 @@
 
             var calc = SAW.BalloonViewModel(params);
 
-            $("#ascent").text(calc.launch);
-            $("#neutral").text(calc.neutral);
-            $("#time").text(calc.time);
+            $("#ascent").text(calc.launch.toFixed(4));
+            $("#neutral").text(calc.neutral.toFixed(4));
+            $("#time").text(calc.time.toFixed(4));
 
             $("#totalMass").text(totalMass);
         };
