@@ -199,7 +199,7 @@ var SAW = function () {
     var BalloonViewModel = function (params) {
         params = params || {};
 
-        var tubeDiameter = params.vehicle.neckTubeInletDiameter || 0.03;
+        var tubeDiameter = params.vehicle.valve.neckTubeInletDiameter || 0.03;
         var tubeRadius = tubeDiameter / 2;
 
         // Launch site loading

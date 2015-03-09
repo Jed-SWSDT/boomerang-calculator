@@ -67,7 +67,7 @@
                 vehicle: {
                     mass: totalMass,
                     valve: {
-                        neckTubeInletDiameter: 0.03 // m
+                        neckTubeInletDiameter: parseFloat($("#valveDiameter").val())
                     }
                 },
                 launch: {
@@ -103,6 +103,7 @@
                 'mass1',
                 'mass2',
                 'mass3', 
+                'valveDiameter',
                 'lsPressure',
                 'lsTemperature',
                 'lsBalloonDiffPressure',
@@ -213,6 +214,16 @@
                                 <input id="mass3" type="number" value="630" class="form-control"
                                 />
                                 <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="valveDiameter">Valve tube inlet diameter</label></th>
+                        <td>
+                            <div class="input-group">
+                                <input id="valveDiameter" type="number" value="0.03" class="form-control"
+                                />
+                                <div class="input-group-addon">m</div>
                             </div>
                         </td>
                     </tr>
