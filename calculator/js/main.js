@@ -181,7 +181,7 @@ var SAW = function () {
     //     mass: (number),
     //     valve: [Object]
     // },
-    // launch: {
+    // launch: { 
     //     pressure: (number),
     //     temperature: (number),
     //     balloon: {
@@ -258,12 +258,13 @@ var SAW = function () {
     return {
         BalloonViewModel: BalloonViewModel,
         test: {
-            system: BalloonViewModel,
-            condition: BalloonModel
+            viewModel: BalloonViewModel,
+            model: BalloonModel
         }
     }
 }();
 
+// for Node.js (unit testing)
 if (typeof(window) === 'undefined' && module) {
     module.exports = SAW.test;
 }

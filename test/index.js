@@ -17,8 +17,8 @@ var defaultState = {
     }
 };
 
-describe('Condition', function () {
-    var unit = calculator.condition(defaultState);
+describe('Balloon Model', function () {
+    var unit = calculator.model(defaultState);
     it('calculates neutral lift before 500ms timeout', function (done) {
         this.timeout(500);
         unit.calcHeliumMass({ mass: 2.02 }, 0.0);
@@ -30,7 +30,7 @@ describe('Condition', function () {
         testState.site.temperature = 0;
 
         (function () {
-            calculator.condition(testState);
+            calculator.model(testState);
         }).should.throw();
     });
 
@@ -39,7 +39,7 @@ describe('Condition', function () {
         testState.site.pressure = 0;
 
         (function () {
-            calculator.condition(testState);
+            calculator.model(testState);
         }).should.throw();
     });
 
@@ -49,7 +49,7 @@ describe('Condition', function () {
         testState.site.pressure = 101;
 
         (function () {
-            calculator.condition(testState);
+            calculator.model(testState);
         }).should.throw();
     });
 
@@ -59,7 +59,7 @@ describe('Condition', function () {
         testState.balloon.diffPressure = 0;
 
         (function () {
-            calculator.condition(testState);
+            calculator.model(testState);
         }).should.throw();
     });
 
@@ -68,13 +68,13 @@ describe('Condition', function () {
         testState.balloon.gasTemperature = 0;
 
         (function () {
-            calculator.condition(testState);
+            calculator.model(testState);
         }).should.throw();
     });
 });
 
-describe('System', function () {
-    var system = calculator.system({
+describe('Balloon View Model', function () {
+    var system = calculator.viewModel({
         vehicle: {
             mass: 2.02,
             valve: {
