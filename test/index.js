@@ -39,6 +39,17 @@ describe('Condition', function () {
         }).should.throw();
     });
 
+
+    it('throws an error when site pressure is too low', function () {
+        var testState = defaultState;
+        testState.site.pressure = 101;
+
+        (function () {
+            calculator.condition(testState);
+        }).should.throw();
+    });
+
+
     it('throws an error when balloon diff pressure is zero', function () {
         var testState = defaultState;
         testState.balloon.diffPressure = 0;
