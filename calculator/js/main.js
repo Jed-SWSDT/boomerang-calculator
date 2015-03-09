@@ -22,10 +22,10 @@ var SAW = function () {
         }
 
         var site = params.site;
-        if (site.temperature && site.temperature <= 0.0) {
+        if (!site.temperature || site.temperature <= 0.0) {
             error("Site temperature must be greater than 0 kelvin");
         }
-        if (site.pressure && site.pressure <= 0.0) {
+        if (!site.pressure || site.pressure <= 0.0) {
             error("Site pressure must be greater than 0");
         }
 
@@ -34,12 +34,12 @@ var SAW = function () {
         }
 
         var balloon = params.balloon;
-        if (balloon.gasTemperature && balloon.gasTemperature <= 0.0) {
+        if (!balloon.gasTemperature || balloon.gasTemperature <= 0.0) {
             error("Balloon gas temperature must be greater than 0 kelvin");
         }
 
         // Needed in the vent-time calc
-        if (balloon.diffPressure && balloon.diffPressure <= 0.0) {
+        if (!balloon.diffPressure || balloon.diffPressure <= 0.0) {
             error("Balloon diff pressure must be greater than 0");
         }
     }
@@ -255,6 +255,6 @@ var SAW = function () {
     }
 }();
 
-if (module) {
+if (typeof(window) === 'undefined' && module) {
     module.exports = SAW.test;
 }

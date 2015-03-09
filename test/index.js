@@ -2,23 +2,59 @@ var should = require('should');
 
 var calculator = require('../calculator/js/main.js');
 
-describe('Condition', function () {
-    
-    var unit = calculator.condition({
-        site: {
-            pressure: 101000,
-            temperature: 283
-        },
-        balloon: {
-            diffPressure: 133,
-            gasTemperature: 283
-        }
-    });
+var defaultState = {
+    site: {
+        pressure: 101000,
+        temperature: 283
+    },
+    balloon: {
+        diffPressure: 133,
+        gasTemperature: 283
+    }
+};
 
-    it('should calculate neutral lift before 500ms timeout', function (done) {
+describe('Condition', function () {
+    var unit = calculator.condition(defaultState);
+    it('calculates neutral lift before 500ms timeout', function (done) {
         this.timeout(500);
         unit.calcHeliumMass({ mass: 2.02 }, 0.0);
         done();
+    });
+
+    it('throws an error when site temperature is zero', function () {
+        var testState = defaultState;
+        testState.site.temperature = 0;
+
+        (function () {
+            calculator.condition(testState);
+        }).should.throw();
+    });
+
+    it('throws an error when site pressure is zero', function () {
+        var testState = defaultState;
+        testState.site.pressure = 0;
+
+        (function () {
+            calculator.condition(testState);
+        }).should.throw();
+    });
+
+    it('throws an error when balloon diff pressure is zero', function () {
+        var testState = defaultState;
+        testState.balloon.diffPressure = 0;
+
+        (function () {
+            calculator.condition(testState);
+        }).should.throw();
+    });
+
+    it('throws an error when balloon gas temperature is zero', function () {
+        var testState = defaultState;
+        testState.balloon.gasTemperature = 0;
+
+        (function () {
+            calculator.condition(testState);
+        }).should.throw();
     });
 });
 
