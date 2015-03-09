@@ -5,8 +5,10 @@ var calculator = require('../calculator/js/main.js');
 describe('Condition', function () {
     
     var unit = calculator.condition({
-        pressure: 101000,
-        temperature: 283,
+        site: {
+            pressure: 101000,
+            temperature: 283
+        },
         balloon: {
             diffPressure: 133,
             gasTemperature: 283

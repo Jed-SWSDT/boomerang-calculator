@@ -1,6 +1,6 @@
 // Balloon calculator
 var SAW = function () {
-    var debug = true;
+    var debug = false;
 
     var constants = {
         HeliumDensity: 0.1786, // ... at 20C, 101 kPa (kg/m^3)
@@ -11,19 +11,62 @@ var SAW = function () {
         BalloonDrag: 0.25      // ??
     };
 
-    var getBalloonCondition = function (initialState) {
-        var pressure = initialState.pressure || 101000; // Pa 
-        var temperature = initialState.temperature || 283; // K
-        
-        var balloon = initialState.balloon || {
-            diffPressure: 133, // Pa 
-            gasTemperature: 283 // K    
-        };
+    var error = function (message) {
+        var err = new Error(message);
+        throw err;
+    };
 
+    var verifyBalloonConditionParams = function (params) {
+        if (!params || !params.site) {
+            error("Please specify an initial state");
+        }
+
+        var site = params.site;
+        if (site.temperature && site.temperature <= 0.0) {
+            error("Site temperature must be greater than 0 kelvin");
+        }
+        if (site.pressure && site.pressure <= 0.0) {
+            error("Site pressure must be greater than 0");
+        }
+
+        if (!params.balloon) {
+            error("Please specify an initial balloon state");
+        }
+
+        var balloon = params.balloon;
+        if (balloon.gasTemperature && balloon.gasTemperature <= 0.0) {
+            error("Balloon gas temperature must be greater than 0 kelvin");
+        }
+
+        // Needed in the vent-time calc
+        if (balloon.diffPressure && balloon.diffPressure <= 0.0) {
+            error("Balloon diff pressure must be greater than 0");
+        }
+    }
+
+    // params: {
+    //   site: { pressure, temperature },
+    //   balloon: { diffPressure, gasTemperature }
+    // }
+    var getBalloonCondition = function (params) {
+        verifyBalloonConditionParams(params);
+
+        var pressure = params.site.pressure || 101000; // Pa 
+        var temperature = params.site.temperature || 283; // K
+        
+        var balloon = {
+            diffPressure: params.balloon.diffPressure || 133, // Pa 
+            gasTemperature: params.balloon.gasTemperature || 283 // K
+        };
+        
         // TODO: This is a system, so should we code it as such?
         // (In other words, do we need setters and to update the
         // model when any paramter changes?)
         balloon.gaugePressure = pressure + balloon.diffPressure;
+        if (balloon.gaugePressure <= 0) {
+            error("Balloon gauge pressure must be greater than zero");
+        }
+
         balloon.gasDensity = 
             balloon.gaugePressure / (balloon.gasTemperature * constants.RSpecificHe);
 
@@ -46,6 +89,10 @@ var SAW = function () {
                     // TODO: Actually do the math? This isn't as important
                     // now that we use a narrowing-in algorithm.
                     return -10;
+                }
+
+                if (launchRadius <= 0.0) {
+                    error("Helium mass cannot be zero, if you want a positive ascent rate.");
                 }
 
                 var ascentRate = 
@@ -103,6 +150,13 @@ var SAW = function () {
         };
 
         var calcVentTime = function (beforeMass, afterMass, valve) {
+            if (!valve) {
+                error("Please specify a valve");
+            }
+            if (!valve.neckTubeInletArea || valve.neckTubeInletArea <= 0) {
+                error("Please specify a valve.neckTubeInletDiameter greater than 0");
+            }
+
             var idealOutletVelocity = Math.sqrt((2 * balloon.diffPressure) / balloon.gasDensity); 
             var volumetricFlowRate = idealOutletVelocity * valve.neckTubeInletArea;
             var massFlowRate = volumetricFlowRate * balloon.gasDensity;
@@ -150,8 +204,14 @@ var SAW = function () {
         var ascentRateTarget = params.ascentRateTarget || 4.5; // m/s;
 
         // Conditions
-        var launch = getBalloonCondition(params.launch);
-        var target = getBalloonCondition(params.target);
+        var launch = getBalloonCondition({
+            site: params.launch, 
+            balloon: params.launch.balloon
+        });
+        var target = getBalloonCondition({
+            site: params.target, 
+            balloon: params.target.balloon
+        });
 
         //----------------------------------------------
         // Calculations
