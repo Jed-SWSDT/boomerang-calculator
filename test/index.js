@@ -3,6 +3,10 @@ var should = require('should');
 var calculator = require('../calculator/js/main.js');
 
 var defaultState = {
+    vehicle: {
+        mass: 2.02,
+        neckTubeInletDiameter: 0.03
+    },
     site: {
         pressure: 101000,
         temperature: 283
@@ -71,7 +75,12 @@ describe('Condition', function () {
 
 describe('System', function () {
     var system = calculator.system({
-        systemMass: 2.02,
+        vehicle: {
+            mass: 2.02,
+            valve: {
+                neckTubeInletDiameter: 0.03
+            }
+        },
         launch: {
             pressure: 101000,
             temperature: 283,

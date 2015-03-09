@@ -30,7 +30,12 @@
                 parseFloat($("#mass3").val())) / 1000; // kg
 
             var params = {
-                systemMass: totalMass,
+                vehicle: {
+                    mass: totalMass,
+                    valve: {
+                        neckTubeInletDiameter: 0.03 // m
+                    }
+                },
                 launch: {
                     pressure: parseFloat($("#lsPressure").val()),
                     temperature: parseFloat($("#lsTemperature").val()),
@@ -52,7 +57,7 @@
 
             console.log(params);
 
-            var calc = SAW.Balloon(params);
+            var calc = SAW.BalloonViewModel(params);
 
             $("#ascent").text(calc.launch);
             $("#neutral").text(calc.neutral);

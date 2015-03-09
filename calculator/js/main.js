@@ -16,7 +16,7 @@ var SAW = function () {
         throw err;
     };
 
-    var verifyBalloonConditionParams = function (params) {
+    var verifyBalloonModelParams = function (params) {
         if (!params || !params.site) {
             error("Please specify an initial state");
         }
@@ -48,8 +48,8 @@ var SAW = function () {
     //   site: { pressure, temperature },
     //   balloon: { diffPressure, gasTemperature }
     // }
-    var getBalloonCondition = function (params) {
-        verifyBalloonConditionParams(params);
+    var BalloonModel = function (params) {
+        verifyBalloonModelParams(params);
 
         var pressure = params.site.pressure || 101000; // Pa 
         var temperature = params.site.temperature || 283; // K
@@ -175,7 +175,10 @@ var SAW = function () {
     };
 
     // Params:
-    // systemMass: (number),
+    // vehicle: {
+    //     mass: (number),
+    //     valve: [Object]
+    // },
     // launch: {
     //     pressure: (number),
     //     temperature: (number),
@@ -193,22 +196,32 @@ var SAW = function () {
     //         gasTemperature: (number)
     //     }
     // }
-    var Balloon = function (params) {
+    var BalloonViewModel = function (params) {
         params = params || {};
 
+        var tubeDiameter = params.vehicle.neckTubeInletDiameter || 0.03;
+        var tubeRadius = tubeDiameter / 2;
+
         // Launch site loading
-        var vehicle = {};
-        vehicle.mass = params.systemMass || 2.0200; // kg
+        var vehicle = {
+            mass: params.vehicle.mass || 2.0200, // kg
+            // TODO: Where does the valve want to be?
+            valve: {
+                neckTubeInletDiameter: tubeDiameter,
+                neckTubeInletRadius: tubeRadius,
+                neckTubeInletArea: Math.PI * Math.pow(tubeRadius, 2)
+            }
+        };
 
         // Targets
         var ascentRateTarget = params.ascentRateTarget || 4.5; // m/s;
 
         // Conditions
-        var launch = getBalloonCondition({
+        var launch = BalloonModel({
             site: params.launch, 
             balloon: params.launch.balloon
         });
-        var target = getBalloonCondition({
+        var target = BalloonModel({
             site: params.target, 
             balloon: params.target.balloon
         });
@@ -225,15 +238,9 @@ var SAW = function () {
             console.log("\nLaunch helium mass: " + launchHeliumMass + " kg");
             console.log("Neutral lift helium mass: " + neutralLiftHeliumMass + " kg");    
         }
-
-        // TODO: Where does the valve want to be?
-        var valve = {};
-        valve.neckTubeInletDiameter = 0.03; // m
-        valve.neckTubeInletRadius = valve.neckTubeInletDiameter / 2;
-        valve.neckTubeInletArea = Math.PI * Math.pow(valve.neckTubeInletRadius, 2);
         
         var ventTimeForStableFloat = 
-            target.calcVentTime(launchHeliumMass, neutralLiftHeliumMass, valve);
+            target.calcVentTime(launchHeliumMass, neutralLiftHeliumMass, vehicle.valve);
 
         if (debug) {
             console.log("Vent time for stable float: " + ventTimeForStableFloat + " seconds");
@@ -247,10 +254,10 @@ var SAW = function () {
     };
 
     return {
-        Balloon: Balloon,
+        BalloonViewModel: BalloonViewModel,
         test: {
-            system: Balloon,
-            condition: getBalloonCondition
+            system: BalloonViewModel,
+            condition: BalloonModel
         }
     }
 }();
