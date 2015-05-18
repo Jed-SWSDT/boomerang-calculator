@@ -5,7 +5,10 @@ var calculator = require('../calculator/js/main.js');
 var defaultState = {
     vehicle: {
         mass: 2.02,
-        neckTubeInletDiameter: 0.03
+        neckTubeInletDiameter: 0.03,
+        balloonDrag: 0.25,
+        rSpecificLiftingGas: 2077,
+        ballastReleaseRate: 2.5
     },
     site: {
         pressure: 101000,

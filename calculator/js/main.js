@@ -69,15 +69,23 @@ var SAW = function () {
             error("Balloon gauge pressure must be greater than zero");
         }
 
+        var rSpecificLiftingGas = params.vehicle.rSpecificLiftingGas;
+        if (!rSpecificLiftingGas || rSpecificLiftingGas <= 0)  {
+            // TODO: Tell the user something is wrong.
+            console.log("R Specific lifting gas is: " + rSpecificLiftingGas);
+            console.log("... using helium as the lifting gas.")
+            rSpecificLiftingGas = constants.RSpecificHe;
+        }
+        
         balloon.gasDensity = 
-            balloon.gaugePressure / (balloon.gasTemperature * constants.RSpecificHe);
+            balloon.gaugePressure / (balloon.gasTemperature * rSpecificLiftingGas);
 
         var calcHeliumMass = function (vehicle, ascentRateTarget, accuracy) {
             var airDensity = pressure / (constants.RSpecificAir * temperature);
 
             var calculateAscentRate = function (heliumMass) {
                 var pressureThing = 
-                    balloon.gaugePressure / (constants.RSpecificHe * balloon.gasTemperature);
+                    balloon.gaugePressure / (rSpecificLiftingGas * balloon.gasTemperature);
 
                 var launchVolume = heliumMass / pressureThing;
                 var launchRadius = Math.pow((3 * launchVolume) / (4 * Math.PI), 1/3);
@@ -86,6 +94,10 @@ var SAW = function () {
                 var freeLiftKg = grossLiftKg - vehicle.mass;
                 var freeLiftNewtons = freeLiftKg * constants.Gravity;
 
+                if (grossLiftKg <= 0) {
+                    error("The balloon gas density is more dense than air. It is impossible to ascend.");    
+                }
+                
                 if (freeLiftNewtons <= 0) {
                     // Descending ...
                     // TODO: Actually do the math? This isn't as important
@@ -99,7 +111,7 @@ var SAW = function () {
 
                 var ascentRate = 
                      Math.sqrt(freeLiftNewtons / 
-                     (0.5 * constants.BalloonDrag * airDensity * (Math.PI * Math.pow(launchRadius,2))));
+                     (0.5 * vehicle.balloonDrag * airDensity * (Math.PI * Math.pow(launchRadius,2))));
 
                 if (debug) {
                     console.log("\n");
@@ -207,6 +219,9 @@ var SAW = function () {
         // Launch site loading
         var vehicle = {
             mass: params.vehicle.mass || 2.0200, // kg
+            balloonDrag: params.vehicle.balloonDrag || constants.BalloonDrag,
+            rSpecificLiftingGas: params.vehicle.rSpecificLiftingGas || constants.RSpecificHe,
+            ballastReleaseRate: params.vehicle.ballastReleaseRate || 2.5, // g/s
             // TODO: Where does the valve want to be?
             valve: {
                 neckTubeInletDiameter: tubeDiameter,
@@ -221,11 +236,13 @@ var SAW = function () {
         // Conditions
         var launch = BalloonModel({
             site: params.launch, 
-            balloon: params.launch.balloon
+            balloon: params.launch.balloon,
+            vehicle: vehicle
         });
         var target = BalloonModel({
             site: params.target, 
-            balloon: params.target.balloon
+            balloon: params.target.balloon,
+            vehicle: vehicle
         });
 
         //----------------------------------------------
