@@ -10,7 +10,7 @@ var SAW = function () {
         AirDensity: 1.2930,    // ... at 20C, 101 kPa (kg/m^3)
         RSpecificHe: 2077,     // J/Kg K
         RSpecificAir: 286.9,   // J/Kg K
-        Gravity: 9.810        // m/s^2
+        Gravity: 9.810         // m/s^2
     };
 
     var error = function (message) {
@@ -43,6 +43,15 @@ var SAW = function () {
         // Needed in the vent-time calc
         if (!balloon.diffPressure || balloon.diffPressure <= 0.0) {
             error("Balloon diff pressure must be greater than 0");
+        }
+        
+        if (!params.vehicle) {
+            error("Please specify an initial vehicle state");
+        }
+        
+        var vehicle = params.vehicle;
+        if (!vehicle.ballastReleaseRate || vehicle.ballastReleaseRate <= 0.0) {
+            error("Ballast release rate must be greater than 0");
         }
     }
 
@@ -80,10 +89,11 @@ var SAW = function () {
         balloon.gasDensity = 
             balloon.gaugePressure / (balloon.gasTemperature * rSpecificLiftingGas);
 
-        var calcHeliumMass = function (vehicle, ascentRateTarget, accuracy) {
-            var airDensity = pressure / (constants.RSpecificAir * temperature);
+        var airDensity = pressure / (constants.RSpecificAir * temperature);
 
-            var calculateAscentRate = function (heliumMass) {
+        var calcBalloonState = function (vehicle, ascentRateTarget, accuracy) {
+
+            var calculateState = function (heliumMass) {
                 var pressureThing = 
                     balloon.gaugePressure / (rSpecificLiftingGas * balloon.gasTemperature);
 
@@ -91,7 +101,7 @@ var SAW = function () {
                 var launchRadius = Math.pow((3 * launchVolume) / (4 * Math.PI), 1/3);
 
                 var grossLiftKg = launchVolume * (airDensity - balloon.gasDensity);
-                var freeLiftKg = grossLiftKg - vehicle.mass;
+                var freeLiftKg = grossLiftKg - vehicle.mass.totalKg;
                 var freeLiftNewtons = freeLiftKg * constants.Gravity;
 
                 if (grossLiftKg <= 0) {
@@ -102,7 +112,11 @@ var SAW = function () {
                     // Descending ...
                     // TODO: Actually do the math? This isn't as important
                     // now that we use a narrowing-in algorithm.
-                    return -10;
+                    return {
+                        ascentRate: -10,
+                        freeLiftKg: freeLiftKg,
+                        launchVolume: launchVolume
+                    };
                 }
 
                 if (launchRadius <= 0.0) {
@@ -126,18 +140,22 @@ var SAW = function () {
                     console.log("Ascent rate:      "   + ascentRate);    
                 }
 
-                return ascentRate;
+                return {
+                    ascentRate: ascentRate,
+                    freeLiftKg: freeLiftKg,
+                    launchVolume: launchVolume
+                };
             };
 
             var heliumMass = 0.0010;
             var massIsGreaterThan = 0.0;
             var massIsLessThan = undefined;
 
-            var ascentRate = calculateAscentRate(heliumMass);
+            var state = calculateState(heliumMass);
 
-            while (Math.abs(ascentRate - ascentRateTarget) > (accuracy || 0.0001)) {
+            while (Math.abs(state.ascentRate - ascentRateTarget) > (accuracy || 0.0001)) {
                 
-                if (ascentRate < ascentRateTarget) {
+                if (state.ascentRate < ascentRateTarget) {
                     // The target mass is greater than where we are at
                     massIsGreaterThan = heliumMass;
                 }
@@ -157,10 +175,14 @@ var SAW = function () {
                     heliumMass = (massIsGreaterThan + massIsLessThan) / 2;
                 }
 
-                ascentRate = calculateAscentRate(heliumMass);
+                state = calculateState(heliumMass);
             }
 
-            return heliumMass;
+            return { 
+                gasMass: heliumMass,
+                launchVolume: state.launchVolume,
+                freeLiftKg: state.freeLiftKg
+            };
         };
 
         var calcVentTime = function (beforeMass, afterMass, valve) {
@@ -179,12 +201,20 @@ var SAW = function () {
             return ventTime;
         };
 
+        var vehicle = params.vehicle;
+
         return {
             pressure: pressure,
             temperature: temperature,
+            airDensity: airDensity,
             balloon: balloon,
-            calcHeliumMass: calcHeliumMass,
-            calcVentTime: calcVentTime
+            calcBalloonState: calcBalloonState,
+            calcVentTime: calcVentTime,
+            vehicle: {
+                ballastDurationCapacity: function () {
+                    return vehicle.mass.ballast / vehicle.ballastReleaseRate;
+                }()
+            }
         };
     };
 
@@ -218,7 +248,11 @@ var SAW = function () {
 
         // Launch site loading
         var vehicle = {
-            mass: params.vehicle.mass || 2.0200, // kg
+            mass: params.vehicle.mass || {
+                balloonEnvelope: 300,
+                flightSystem: 1090,
+                ballast: 630
+            },
             balloonDrag: params.vehicle.balloonDrag || constants.BalloonDrag,
             rSpecificLiftingGas: params.vehicle.rSpecificLiftingGas || constants.RSpecificHe,
             ballastReleaseRate: params.vehicle.ballastReleaseRate || 2.5, // g/s
@@ -229,6 +263,12 @@ var SAW = function () {
                 neckTubeInletArea: Math.PI * Math.pow(tubeRadius, 2)
             }
         };
+
+        vehicle.mass.totalKg = function () {
+            return (vehicle.mass.balloonEnvelope +
+                vehicle.mass.flightSystem +
+                vehicle.mass.ballast) / 1000.0;
+        }();
 
         // Targets
         var ascentRateTarget = params.ascentRateTarget || 4.5; // m/s;
@@ -248,10 +288,12 @@ var SAW = function () {
         //----------------------------------------------
         // Calculations
         //
-        var launchHeliumMass = launch.calcHeliumMass(vehicle, ascentRateTarget);        
+        var balloonState = launch.calcBalloonState(vehicle, ascentRateTarget);
+        var launchHeliumMass = balloonState.gasMass;
+        
         // Calculate the neutral lift using the launch-site conditions, 
         // because they're easier to verify(?)
-        var neutralLiftHeliumMass = launch.calcHeliumMass(vehicle, 0.0);
+        var neutralLiftHeliumMass = launch.calcBalloonState(vehicle, 0.0).gasMass;
 
         if (debug) {
             console.log("\nLaunch helium mass: " + launchHeliumMass + " kg");
@@ -266,8 +308,17 @@ var SAW = function () {
         }
 
         return {
-            launch: launchHeliumMass,
-            neutral: neutralLiftHeliumMass,
+            launch: {
+                gasMass: launchHeliumMass,
+                airDensity: launch.airDensity,
+                launchVolume: balloonState.launchVolume,
+                freeLiftKg: balloonState.freeLiftKg,
+                ballastDurationCapacity: launch.vehicle.ballastDurationCapacity
+            },
+            neutral: {
+                gasMass: neutralLiftHeliumMass,
+                airDensity: target.airDensity
+            },
             time: ventTimeForStableFloat
         };
     };

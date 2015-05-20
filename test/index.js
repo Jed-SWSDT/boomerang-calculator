@@ -4,7 +4,11 @@ var calculator = require('../calculator/js/main.js');
 
 var defaultState = {
     vehicle: {
-        mass: 2.02,
+        mass: {
+            balloonEnvelope: 300,
+            flightSystem: 1090,
+            ballast: 630   
+        },
         neckTubeInletDiameter: 0.03,
         balloonDrag: 0.25,
         rSpecificLiftingGas: 2077,
@@ -24,7 +28,7 @@ describe('Balloon Model', function () {
     var unit = calculator.model(defaultState);
     it('calculates neutral lift before 500ms timeout', function (done) {
         this.timeout(500);
-        unit.calcHeliumMass({ mass: 2.02 }, 0.0);
+        unit.calcBalloonState({ mass: defaultState.vehicle.mass }, 0.0);
         done();
     });
 
@@ -79,7 +83,11 @@ describe('Balloon Model', function () {
 describe('Balloon View Model', function () {
     var system = calculator.viewModel({
         vehicle: {
-            mass: 2.02,
+            mass: {
+                balloonEnvelope: 300,
+                flightSystem: 1090,
+                ballast: 630
+            },
             valve: {
                 neckTubeInletDiameter: 0.03
             }
@@ -104,11 +112,11 @@ describe('Balloon View Model', function () {
     });
 
     it('calculates correct launch helium mass', function () {
-        (system.launch).should.be.above(0.44).and.below(0.45);
+        (system.launch.gasMass).should.be.above(0.44).and.below(0.45);
     });
 
     it('calculates correct neutral lift helium mass', function () {
-        (system.neutral).should.be.above(0.324).and.below(0.325);
+        (system.neutral.gasMass).should.be.above(0.324).and.below(0.325);
     });
         
     it('calculates correct vent time', function () {

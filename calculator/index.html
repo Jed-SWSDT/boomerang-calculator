@@ -59,7 +59,12 @@
                 padding-bottom: 2em;
             }
 
-            #totalMass {
+            #totalMass, 
+            #lsAirDensity, 
+            #ambientAirDensity,
+            #launchVolume,
+            #freeLiftKg,
+            #ballastDurationCapacity {
                 background-color: #ddd;
             }
         </style>
@@ -83,7 +88,11 @@
 
             var params = {
                 vehicle: {
-                    mass: totalMass,
+                    mass: {
+                        balloonEnvelope: parseFloat($("#mass1").val()),
+                        flightSystem: parseFloat($("#mass2").val()),
+                        ballast: parseFloat($("#mass3").val())
+                    },
                     balloonDrag: parseFloat($("#balloonDrag").val()),
                     rSpecificLiftingGas: rSpecificLiftingGas,
                     ballastReleaseRate: parseFloat($("#ballastReleaseRate").val()),
@@ -112,11 +121,19 @@
 
             var calc = SAW.BalloonViewModel(params);
 
-            $("#ascent").text(calc.launch.toFixed(4));
-            $("#neutral").text(calc.neutral.toFixed(4));
+            $("#ascent").text(calc.launch.gasMass.toFixed(4));
+            $("#neutral").text(calc.neutral.gasMass.toFixed(4));
             $("#time").text(calc.time.toFixed(4));
 
+            $("#launchVolume").text(calc.launch.launchVolume.toFixed(4));
+            $("#freeLiftKg").text(calc.launch.freeLiftKg.toFixed(4));
+            $("#ballastDurationCapacity").text(calc.launch.ballastDurationCapacity.toFixed(4));
+
             $("#totalMass").text(totalMass);
+            
+            $("#lsAirDensity").text(calc.launch.airDensity.toFixed(4));
+            $("#ambientAirDensity").text(calc.neutral.airDensity.toFixed(4));
+            
         };
 
         $(function () {
@@ -184,6 +201,24 @@
                             <div class="input-group">
                                 <span class="form-control calc" id="time"></span>
                                 <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Launch volume</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="launchVolume"></span>
+                                <div class="input-group-addon">m<sup>3</sup></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label>Launch free lift</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="freeLiftKg"></span>
+                                <div class="input-group-addon">kg</div>
                             </div>
                         </td>
                     </tr>
@@ -304,6 +339,15 @@
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <th><label for="ballastDurationCapacity">Ballast duration capacity</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span id="ballastDurationCapacity" class="form-control"></span>
+                                <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -334,6 +378,16 @@
                                 <input class="form-control" id="lsTemperature" 
                                     type="number" value="283"/>
                                 <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th><label for="lsAirDensity">Air density</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span id="lsAirDensity" class="form-control"></span>
+                                <div class="input-group-addon">kg/m<sup>3</sup></div>
                             </div>
                         </td>
                     </tr>
@@ -382,6 +436,15 @@
                                 <input class="form-control" id="ambientTemperature" 
                                     type="number" value="221"/>
                                 <div class="input-group-addon">K</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="ambientAirDensity">Air density</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span id="ambientAirDensity" class="form-control"></span>
+                                <div class="input-group-addon">kg/m<sup>3</sup></div>
                             </div>
                         </td>
                     </tr>
