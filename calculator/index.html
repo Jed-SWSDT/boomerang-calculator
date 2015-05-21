@@ -37,6 +37,9 @@
                 padding-top: 1.1em;
                 padding-bottom: 3em;
             }
+            .afterCalculate {
+                padding-top: 2em;
+            }
 
             .balloonPanel {
                 background-color: #eee;
@@ -64,7 +67,8 @@
             #ambientAirDensity,
             #launchVolume,
             #freeLiftKg,
-            #ballastDurationCapacity {
+            #ballastDurationCapacity,
+            #ballastRemaining {
                 background-color: #ddd;
             }
         </style>
@@ -124,6 +128,11 @@
             $("#ascent").text(calc.launch.gasMass.toFixed(4));
             $("#neutral").text(calc.neutral.gasMass.toFixed(4));
             $("#time").text(calc.time.toFixed(4));
+            
+            var dropTime = parseFloat($("#ballastDropInSeconds").val());
+            
+            $("#ballastRemaining").text(calc.launch.ballastAfterBallastDrop(dropTime).toFixed(4));
+            $("#postBallastDropAscentRate").text(calc.launch.ascentRateAfterBallastDrop(dropTime).toFixed(4));
 
             $("#launchVolume").text(calc.launch.launchVolume.toFixed(4));
             $("#freeLiftKg").text(calc.launch.freeLiftKg.toFixed(4));
@@ -153,6 +162,7 @@
                 'lsBalloonGasTemperature',
                 
                 'ascentRateTarget',
+                'ballastDropInSeconds',
                 
                 'ambientPressure',
                 'ambientTemperature',
@@ -241,6 +251,35 @@
                     <tr>
                         <th>&nbsp;</th>
                         <td class="buttonRow"><button id="calcButton" class="btn btn-default">Calculate</button></td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="afterCalculate"><label for="ballastDropInSeconds">Ballast drop in seconds</label></th>
+                        <td class="afterCalculate">
+                            <div class="input-group">
+                                <input id="ballastDropInSeconds" class="form-control"  
+                                    type="number" value="0"/>
+                                <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="postBallastDropAscentRate">Post-ballast-drop ascent rate</label></th>
+                        <td>
+                            <div class="input-group">
+                                <div id="postBallastDropAscentRate" class="form-control calc"></div>  
+                                <div class="input-group-addon">m/s</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="ballastRemaining">Ballast remaining</label></th>
+                        <td>
+                            <div class="input-group">
+                                <div id="ballastRemaining" class="form-control"></div>  
+                                <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>
