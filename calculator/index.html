@@ -136,7 +136,9 @@
 
             $("#launchVolume").text(calc.launch.launchVolume.toFixed(4));
             $("#freeLiftKg").text(calc.launch.freeLiftKg.toFixed(4));
-            $("#ballastDurationCapacity").text(calc.launch.ballastDurationCapacity.toFixed(4));
+            // This is no longer needed. Leave here for a little in case we change
+            // our minds. May 28, 2015.
+            // $("#ballastDurationCapacity").text(calc.launch.ballastDurationCapacity.toFixed(4));
 
             $("#totalMass").text(totalMass);
             
@@ -206,15 +208,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><label>Vent time for stable float</label></th>
-                        <td>
-                            <div class="input-group">
-                                <span class="form-control calc" id="time"></span>
-                                <div class="input-group-addon">s</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
                         <th><label>Launch volume</label></th>
                         <td>
                             <div class="input-group">
@@ -236,8 +229,13 @@
             </div>
 
             <div class="col-md-6 col-xs-12">
-                <h2>Targets</h2>
+                <h2>Ascent targets</h2>
                 <table>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <td class="buttonRow"><button id="calcButton" class="btn btn-default">Calculate</button></td>
+                    </tr>
+                    
                     <tr>
                         <th><label for="ascentRateTarget">Initial ascent rate</label></th>
                         <td>
@@ -249,8 +247,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>&nbsp;</th>
-                        <td class="buttonRow"><button id="calcButton" class="btn btn-default">Calculate</button></td>
+                        <th><label>Vent time for target altitude</label></th>
+                        <td>
+                            <div class="input-group">
+                                <span class="form-control calc" id="time"></span>
+                                <div class="input-group-addon">s</div>
+                            </div>
+                        </td>
                     </tr>
                     
                     <tr>
@@ -258,7 +261,7 @@
                         <td class="afterCalculate">
                             <div class="input-group">
                                 <input id="ballastDropInSeconds" class="form-control"  
-                                    type="number" value="0"/>
+                                    type="number" min="0" value="0"/>
                                 <div class="input-group-addon">s</div>
                             </div>
                         </td>
@@ -288,7 +291,7 @@
 
 
         <div class="row balloonPanel">
-            <h2 class="col-xs-12">Balloon properties</h2>
+            <h2 class="col-xs-12">Flight system properties</h2>
             <div class="col-xs-12 col-sm-6">
                 <table>
                     <tr>
@@ -301,7 +304,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="mass2">Flight system (including payload) mass</label></th>
+                        <th><label for="mass2">Flight system &amp; payload mass</label></th>
                         <td>
                             <div class="input-group">
                                 <input id="mass2" type="number" value="1090" class="form-control"/>
@@ -320,7 +323,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="totalMass">Total mass</label></th>
+                        <th><label for="totalMass">Total launch mass</label></th>
                         <td>
                             <div class="input-group">
                                 <span id="totalMass" class="form-control"></span>
@@ -361,7 +364,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="rSpecificLiftingGas">Rspecific lifting gas</label></th>
+                        <th><label for="rSpecificLiftingGas">Lift gas Rspecific</label></th>
                         <td>
                             <div class="input-group">
                                 <input id="rSpecificLiftingGas" type="number" value="2077" class="form-control"/>
@@ -378,7 +381,8 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
+<!-- This is no longer wanted. Leave it here for a little in case our minds change. May 28, 2015
+                   <tr>
                         <th><label for="ballastDurationCapacity">Ballast duration capacity</label></th>
                         <td>
                             <div class="input-group">
@@ -386,7 +390,7 @@
                                 <div class="input-group-addon">s</div>
                             </div>
                         </td>
-                    </tr>
+                    </tr>-->
                 </table>
             </div>
         </div>
@@ -456,7 +460,7 @@
             </div>
 
             <div class="col-xs-12 col-md-6">
-                <h2>Ambient conditions at altitude</h2>
+                <h2>Target altitude conditions</h2>
                 <table>
                     <tr>
                         <th><label for="ambientPressure">Pressure</label></th>
