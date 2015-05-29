@@ -229,6 +229,27 @@ var SAW = function () {
 
         var vehicle = params.vehicle;
 
+        var calcAmbientPressureAfterBallastDrop = function (dropTime) {
+            var pressureFraction = balloon.diffPressure / pressure;
+            var systemWeight = vehicle.mass.totalKg * constants.Gravity;
+
+            var droppedBallastMass = dropTime * vehicle.ballastReleaseRate;
+            droppedBallastMass = Math.min(vehicle.mass.ballast, droppedBallastMass);
+            
+            var massAfterBallastDrop = vehicle.mass.totalKg - (droppedBallastMass / 1000.0);
+            var systemWeightAfterBallastDrop = massAfterBallastDrop * constants.Gravity;
+            
+            var ambientPressure = balloon.diffPressure / (((systemWeight * (1 + pressureFraction)) / systemWeightAfterBallastDrop) - 1);
+            
+            if (debug) {
+                console.log("Pressure fraction: " + pressureFraction);
+                console.log("System weight:     " + systemWeight);
+                console.log("Mass after drop:   " + massAfterBallastDrop); 
+            }
+            
+            return ambientPressure;
+        };
+
         return {
             pressure: pressure,
             temperature: temperature,
@@ -236,6 +257,7 @@ var SAW = function () {
             balloon: balloon,
             calcBalloonState: calcBalloonState,
             calcVentTime: calcVentTime,
+            calcAmbientPressureAfterBallastDrop: calcAmbientPressureAfterBallastDrop,
             vehicle: {
                 ballastDurationCapacity: function () {
                     return vehicle.mass.ballast / vehicle.ballastReleaseRate;
@@ -352,7 +374,8 @@ var SAW = function () {
             },
             neutral: {
                 gasMass: neutralLiftHeliumMass,
-                airDensity: target.airDensity
+                airDensity: target.airDensity,
+                ambientPressureAfterBallastDrop: target.calcAmbientPressureAfterBallastDrop
             },
             time: ventTimeForStableFloat
         };
