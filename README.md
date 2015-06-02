@@ -8,7 +8,10 @@ A calculator for determining how much helium to put in a balloon to:
 to run
 -------------------------------------
 Open /calculator/index.html in a browser. The calculator is designed 
-to work locally, without an Internet connection.
+to work locally, without an Internet connection. 
+
+To change the calculator's default values, edit the /calculator/defaults.js 
+file with a text editor.
 
 
 developer notes
