@@ -3,86 +3,7 @@
         <title>Boomerang vent and ballast calculator</title>
         <link rel="stylesheet" href="css/bootstrap-3.3.2-custom.css"/>
         <link rel="stylesheet" href="css/bootstrap-theme-3.3.2-custom.css"/>
-        <style>
-            body {
-                background-color: #04394d;
-            }
-            .container {
-                background-color: white;
-            }
-            h1 {
-                text-align: right;
-                color: #04394d;
-                padding-bottom: 0;
-                margin-bottom: 0;
-            }
-            .header h3 {
-                text-align: right;
-                font-style: italic;
-                padding-top: 0;
-                margin-top: 0;
-            }
-            h2 {
-                padding-bottom: 0.2ex;
-            }
-            th {
-                padding-right: 2ex;
-                padding-top: 0.75ex;
-            }
-            td {
-                padding-bottom: 0.75ex;
-            }
-            .calc {
-                background-color: #d2f3fe;
-            }
-
-            .calcButtonContainer {
-                padding-top: 1.25em;
-            }
-            .calcPanel {
-                background-color: #fafafa;
-                padding-top: 1.1em;
-                padding-bottom: 3em;
-            }
-            .afterCalculate {
-                padding-top: 2em;
-            }
-
-            .balloonPanel {
-                background-color: #eee;
-                padding-top: 1.1em;
-                padding-bottom: 3em;
-            }
-
-            .conditionsPanel {
-                background-color: #ddd;
-                padding-top: 1.1em;
-                padding-bottom: 3em;
-            }
-
-            .createdByPanel {
-                background-color: #ccc;
-                text-align: center;
-                padding-right: 2ex;
-                padding-left: 2ex;
-                padding-top: 2em;
-                padding-bottom: 2em;
-            }
-
-            #totalMass, 
-            #lsAirDensity, 
-            #ambientAirDensity,
-            #launchVolume,
-            #freeLiftKg,
-            #ballastDurationCapacity,
-            #ballastRemaining {
-                background-color: #ddd;
-            }
-
-            .form-control {
-                width: 14ex !important;
-            }
-        </style>
+        <link rel="stylesheet" href="css/main.css"/>
 
         <script src="js/lib/jquery-2.1.3.js"></script>        
         <script src="js/lib/bootstrap-3.3.2-custom.js"></script>
@@ -91,9 +12,9 @@
         <script>
         var updateView = function () {
 
-            var totalMass = (parseFloat($("#mass1").val()) +
-                parseFloat($("#mass2").val()) +
-                parseFloat($("#mass3").val())) / 1000; // kg
+            var totalMass = (parseFloat($("#envelopeMass").val()) +
+                parseFloat($("#flightSystemMass").val()) +
+                parseFloat($("#ballastMass").val())) / 1000; // kg
 
             var rSpecificLiftingGas = parseFloat($("#rSpecificLiftingGas").val());
             if (rSpecificLiftingGas <= 0) {
@@ -104,9 +25,9 @@
             var params = {
                 vehicle: {
                     mass: {
-                        balloonEnvelope: parseFloat($("#mass1").val()),
-                        flightSystem: parseFloat($("#mass2").val()),
-                        ballast: parseFloat($("#mass3").val())
+                        balloonEnvelope: parseFloat($("#envelopeMass").val()),
+                        flightSystem: parseFloat($("#flightSystemMass").val()),
+                        ballast: parseFloat($("#ballastMass").val())
                     },
                     balloonDrag: parseFloat($("#balloonDrag").val()),
                     rSpecificLiftingGas: rSpecificLiftingGas,
@@ -161,9 +82,9 @@
 
         $(function () {
             var fieldsToUpdateOnChange = [ 
-                'mass1',
-                'mass2',
-                'mass3', 
+                'envelopeMass',
+                'flightSystemMass',
+                'ballastMass', 
                 
                 'neckTubeInletDiameter',
                 'balloonDrag',
@@ -320,28 +241,28 @@
             <div class="col-xs-12 col-sm-6">
                 <table>
                     <tr>
-                        <th><label for="mass1">Balloon envelope mass</label></th>
+                        <th><label for="envelopeMass">Balloon envelope mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="mass1" type="number" min="0" value="300" class="form-control"/>
+                                <input id="envelopeMass" type="number" min="0" value="300" class="form-control"/>
                                 <div class="input-group-addon">g</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="mass2">Flight system &amp; payload mass</label></th>
+                        <th><label for="flightSystemMass">Flight system &amp; payload mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="mass2" type="number" min="0" value="1090" class="form-control"/>
+                                <input id="flightSystemMass" type="number" min="0" value="1090" class="form-control"/>
                                 <div class="input-group-addon">g</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="mass3">Ballast mass</label></th>
+                        <th><label for="ballastMass">Ballast mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="mass3" type="number" min="0" value="630" class="form-control"
+                                <input id="ballastMass" type="number" min="0" value="630" class="form-control"
                                 />
                                 <div class="input-group-addon">g</div>
                             </div>
