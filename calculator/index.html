@@ -8,6 +8,9 @@
         <script src="js/lib/jquery-2.1.3.js"></script>        
         <script src="js/lib/bootstrap-3.3.2-custom.js"></script>
 
+        <!-- Edit defaults.js to change default form values -->
+        <script src="defaults.js"></script>
+
         <script src="js/main.js"></script>
         <script src="js/view.js"></script>
     </head>
@@ -75,7 +78,7 @@
                         <td>
                             <div class="input-group">
                                 <input id="ascentRateTarget" class="form-control"  
-                                    type="number" min="0" value="4.5" step="0.1"/>
+                                    type="number" min="0" step="0.1"/>
                                 <div class="input-group-addon">m/s</div>
                             </div>
                         </td>
@@ -95,7 +98,7 @@
                         <td class="afterCalculate">
                             <div class="input-group">
                                 <input id="ballastDropInSeconds" class="form-control"  
-                                    type="number" min="0" value="0"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">s</div>
                             </div>
                         </td>
@@ -141,7 +144,7 @@
                         <th><label for="envelopeMass">Balloon envelope mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="envelopeMass" type="number" min="0" value="300" class="form-control"/>
+                                <input id="envelopeMass" type="number" min="0" class="form-control"/>
                                 <div class="input-group-addon">g</div>
                             </div>
                         </td>
@@ -150,7 +153,7 @@
                         <th><label for="flightSystemMass">Flight system &amp; payload mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="flightSystemMass" type="number" min="0" value="1090" class="form-control"/>
+                                <input id="flightSystemMass" type="number" min="0" class="form-control"/>
                                 <div class="input-group-addon">g</div>
                             </div>
                         </td>
@@ -159,7 +162,7 @@
                         <th><label for="ballastMass">Ballast mass</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="ballastMass" type="number" min="0" value="630" class="form-control"
+                                <input id="ballastMass" type="number" min="0" class="form-control"
                                 />
                                 <div class="input-group-addon">g</div>
                             </div>
@@ -193,7 +196,7 @@
                         <th><label for="balloonDrag">Balloon drag, C<sub>d</sub></label></th>
                         <td>
                             <div class="input-group">
-                                <input id="balloonDrag" type="number" min="0" max="2" step="0.01" value="0.25" class="form-control"/>
+                                <input id="balloonDrag" type="number" min="0" max="2" step="0.01" class="form-control"/>
                             </div>
                         </td>
                     </tr>
@@ -201,7 +204,7 @@
                         <th><label for="neckTubeInletDiameter">Neck tube inlet diameter</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="neckTubeInletDiameter" type="number" min="0" step="0.001" value="0.030" class="form-control"/>
+                                <input id="neckTubeInletDiameter" type="number" min="0" step="0.001" class="form-control"/>
                                 <div class="input-group-addon">m</div>
                             </div>
                         </td>
@@ -210,7 +213,7 @@
                         <th><label for="rSpecificLiftingGas">Lift gas R<sub>specific</sub></label></th>
                         <td>
                             <div class="input-group">
-                                <input id="rSpecificLiftingGas" type="number" min="0" max="5000" value="2077" class="form-control"/>
+                                <input id="rSpecificLiftingGas" type="number" min="0" max="5000" class="form-control"/>
                                 <div class="input-group-addon">J/kg K</div>
                             </div>
                         </td>
@@ -219,7 +222,7 @@
                         <th><label for="ballastReleaseRate">Ballast release rate</label></th>
                         <td>
                             <div class="input-group">
-                                <input id="ballastReleaseRate" type="number" min="0" max="100" step="0.01" value="5.25" class="form-control"/>
+                                <input id="ballastReleaseRate" type="number" min="0" max="100" step="0.01" class="form-control"/>
                                 <div class="input-group-addon">g/s</div>
                             </div>
                         </td>
@@ -251,7 +254,7 @@
                         <td>
                             <div class="input-group">
                                 <input id="lsPressure" class="form-control"  
-                                    type="number" min="0" value="101000"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">Pa</div>
                             </div>
                         </td>
@@ -262,7 +265,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="lsTemperature" 
-                                    type="number" min="0" value="283"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">K</div>
                             </div>
                         </td>
@@ -283,7 +286,7 @@
                         <td>
                             <div class="input-group">
                                 <input id="lsBalloonDiffPressure" class="form-control"  
-                                    type="number" min="0" value="133"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">Pa</div>
                             </div>
                         </td>
@@ -294,7 +297,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="lsBalloonGasTemperature" 
-                                    type="number" min="0" value="283"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">K</div>
                             </div>
                         </td>
@@ -310,7 +313,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="ambientPressure" 
-                                    type="number" min="0" value="10343"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">Pa</div>
                             </div>
                         </td>
@@ -320,7 +323,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="ambientTemperature" 
-                                    type="number" min="0" value="221"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">K</div>
                             </div>
                         </td>
@@ -339,7 +342,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="ambientBalloonDiffPressure" 
-                                    type="number" min="0" value="150"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">Pa</div>
                             </div>
                         </td>
@@ -349,7 +352,7 @@
                         <td>
                             <div class="input-group">
                                 <input class="form-control" id="ambientBalloonGasTemperature" 
-                                    type="number" min="0" value="223"/>
+                                    type="number" min="0"/>
                                 <div class="input-group-addon">K</div>
                             </div>
                         </td>
