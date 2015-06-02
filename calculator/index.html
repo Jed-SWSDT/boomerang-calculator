@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Balloon ascent calculator</title>
+        <title>Boomerang vent and ballast calculator</title>
         <link rel="stylesheet" href="css/bootstrap-3.3.2-custom.css"/>
         <link rel="stylesheet" href="css/bootstrap-theme-3.3.2-custom.css"/>
         <style>
@@ -133,7 +133,7 @@
             
             $("#ballastRemaining").text(calc.launch.ballastAfterBallastDrop(dropTime).toFixed(0));
             $("#postBallastDropAscentRate").text(calc.launch.ascentRateAfterBallastDrop(dropTime).toFixed(1));
-            $("#targetAmbientPressure").text(calc.neutral.ambientPressureAfterBallastDrop(dropTime).toFixed(0));
+            $("#settlingAboveTarget").text(calc.neutral.ambientPressureAfterBallastDrop(dropTime).toFixed(0));
 
             $("#launchVolume").text(calc.launch.launchVolume.toFixed(3));
             $("#freeLiftKg").text(calc.launch.freeLiftKg.toFixed(4));
@@ -269,15 +269,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="targetAmbientPressure">Target ambient pressure</label></th>
-                        <td>
-                            <div class="input-group">
-                                <div id="targetAmbientPressure" class="form-control calc"></div>  
-                                <div class="input-group-addon">Pa</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
                         <th><label for="postBallastDropAscentRate">Post ballast drop ascent rate</label></th>
                         <td>
                             <div class="input-group">
@@ -292,6 +283,15 @@
                             <div class="input-group">
                                 <div id="ballastRemaining" class="form-control"></div>  
                                 <div class="input-group-addon">g</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="settlingAboveTarget">Settling above target</label></th>
+                        <td>
+                            <div class="input-group">
+                                <div id="settlingAboveTarget" class="form-control calc"></div>  
+                                <div class="input-group-addon">Pa</div>
                             </div>
                         </td>
                     </tr>
