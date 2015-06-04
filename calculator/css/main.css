@@ -4,17 +4,25 @@ body {
 .container {
     background-color: white;
 }
-h1 {
-    text-align: right;
+.header {
+    margin-top: 1.3em;
+    margin-bottom: 1.3em;
+}
+.header h1 {
+    font-family: "Nimbus Sans", Helvetica, sans-serif;
+    margin-top: 0;
+    font-weight: normal;
     color: #04394d;
-    padding-bottom: 0;
-    margin-bottom: 0;
 }
 .header h3 {
     text-align: right;
     font-style: italic;
     padding-top: 0;
     margin-top: 0;
+}
+.header .logo {
+    text-align: right;
+    padding-right: 5ex;
 }
 h2 {
     padding-bottom: 0.2ex;
